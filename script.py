@@ -12,7 +12,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from scipy import stats
 
-def compose_plot_file_name(x_label, y_label, category_label = None):
+    def compose_plot_file_name(x_label, y_label, category_label = None):
     """
     Creates a name for a plot file based on the labels for the X, Y, and
     categorical variables.
@@ -33,10 +33,10 @@ def compose_plot_file_name(x_label, y_label, category_label = None):
     str
         Output plot file name.
     """
-    safe_species = species_name.replace(" ", "_")
-    return f"{safe_species}_{x_label}_vs_{y_label}.png"
+        safe_species = species_name.replace(" ", "_")
+        return f"{safe_species}_{x_label}_vs_{y_label}.png"
 
- def plot_regression(dataframe, x_column_name, y_column_name, species_name, output_dir):
+    def plot_regression(dataframe, x_column_name, y_column_name, species_name, output_dir):
     """
     Create a scatter plot and regression line for one species.
 
@@ -139,7 +139,7 @@ def compose_plot_file_name(x_label, y_label, category_label = None):
     return saved_plots
 
 
-def main_cli():
+    def main_cli():
     """
     Run the command-line interface for the script.
     """
