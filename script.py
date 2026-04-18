@@ -126,3 +126,59 @@ def regress_and_scatter(dataframe, x_column_name, y_column_name,
     plt.legend()
     plt.savefig(plot_path)
 
+def main_cli():
+    """
+    The main command-line interface for this script.
+
+    The function takes no arguments and returns None.
+    """
+    # Create a command-line arg parser
+    parser = argparse.ArgumentParser(
+            formatter_class = argparse.ArgumentDefaultsHelpFormatter)
+
+    # Add command-line arguments to our parser
+    parser.add_argument('path',
+            type = str,
+            help = 'A path to a CSV file.')
+    parser.add_argument('-x', '--x',
+            type = str,
+            default = "petal_length_cm",
+            help = 'The column name to plot along the X axis.')
+    parser.add_argument('-y', '--y',
+            type = str,
+            default = "sepal_length_cm",
+            help = 'The column name to plot along the Y axis.')
+    parser.add_argument('-c', '--category',
+            type = str,
+            default = "species",
+            help = 'The column name to treat as a categorical variable.')
+    parser.add_argument('-o', '--output-plot-path',
+            type = str,
+            default = "",
+            help = 'The desired path of the output plot.')
+
+    # Use our arg parser to parse the command-line args
+    args = parser.parse_args()
+
+    # Make sure the path to the CSV exists and is a file
+    if not os.path.exists(args.path):
+        msg = "ERROR: The path {0} does not exist.".format(args.path)
+        sys.exit(msg)
+    elif not os.path.isfile(args.path):
+        msg = "ERROR: The path {0} is not a file.".format(args.path)
+        sys.exit(msg)
+
+    # An example of Python's try-except flow control
+    try:
+        dataframe = pd.read_csv(args.path)
+    except Exception as e:
+        msg = "Pandas had a problem reading {0}\n".format(args.path)
+        sys.stderr.write(msg)
+        raise e
+
+    regress_and_scatter(dataframe, args.x, args.y,
+            args.category, args.output_plot_path)
+
+
+if __name__ == '__main__':
+    main_cli()
