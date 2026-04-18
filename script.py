@@ -31,13 +31,58 @@ def compose_plot_file_name(x_label, y_label, category_label = None):
     Returns
     -------
     str
-        The file name.
+        Output plot file name.
     """
-    category_str = ""
-    if category_label:
-        category_str = "-by-{0}".format(category_label)
-    plot_path = "{0}-v-{1}{2}.pdf".format(x_label, y_label,
-            category_str)
+     safe_species = species_name.replace(" ", "_")
+    return f"{safe_species}_{x_label}_vs_{y_label}.png"
+
+ def plot_regression(dataframe, x_column_name, y_column_name, species_name, output_dir):
+    """
+    Create a scatter plot and regression line for one species.
+
+    Parameters
+    ----------
+    dataframe : pandas.DataFrame
+        Data for one species only.
+    x_column_name : str
+        Name of the predictor column.
+    y_column_name : str
+        Name of the response column.
+    species_name : str
+        Name of the species being plotted.
+    output_dir : str
+        Directory where the plot file will be saved.
+
+    Returns
+    -------
+    str
+        Path to the saved plot.
+    """
+    x = dataframe[x_column_name]
+    y = dataframe[y_column_name]
+
+    regression = stats.linregress(x, y)
+    slope = regression.slope
+    intercept = regression.intercept
+
+    x_min = x.min()
+    x_max = x.max()
+    y_min = slope * x_min + intercept
+    y_max = slope * x_max + intercept
+
+    plt.figure()
+    plt.scatter(x, y, label="Data")
+    plt.plot([x_min, x_max], [y_min, y_max], label="Regression line")
+    plt.xlabel(x_column_name)
+    plt.ylabel(y_column_name)
+    plt.title(f"{species_name}: {y_column_name} vs {x_column_name}")
+    plt.legend()
+
+    file_name = compose_plot_file_name(species_name, x_column_name, y_column_name)
+    plot_path = os.path.join(output_dir, file_name)
+    plt.savefig(plot_path)
+    plt.close()
+
     return plot_path
 
 def regress_and_scatter(dataframe, x_column_name, y_column_name,
