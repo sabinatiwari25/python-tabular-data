@@ -116,63 +116,99 @@ def compose_plot_file_name(x_label, y_label, category_label = None):
         The path where the plot will be saved. If not provided, the plot will
         be saved to the current working directory and the name will be based on
         the X, Y, and category column names.
-        
+    output_dir : str
+        Directory where plots will be saved.
 
     Returns
+    -------
+    list of str
+        Paths to the saved plot files.
+    """
+    saved_plots = []
+
+    for species_name, species_df in dataframe.groupby(category_column_name):
+        plot_path = plot_regression(
+            species_df,
+            x_column_name,
+            y_column_name,
+            species_name,
+            output_dir
+        )
+        saved_plots.append(plot_path)
+
+    return saved_plots
+
 
 def main_cli():
     """
-    The main command-line interface for this script.
-
-    The function takes no arguments and returns None.
+    Run the command-line interface for the script.
     """
-    # Create a command-line arg parser
     parser = argparse.ArgumentParser(
-            formatter_class = argparse.ArgumentDefaultsHelpFormatter)
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter
+    )
 
-    # Add command-line arguments to our parser
-    parser.add_argument('path',
-            type = str,
-            help = 'A path to a CSV file.')
-    parser.add_argument('-x', '--x',
-            type = str,
-            default = "petal_length_cm",
-            help = 'The column name to plot along the X axis.')
-    parser.add_argument('-y', '--y',
-            type = str,
-            default = "sepal_length_cm",
-            help = 'The column name to plot along the Y axis.')
-    parser.add_argument('-c', '--category',
-            type = str,
-            default = "species",
-            help = 'The column name to treat as a categorical variable.')
-    parser.add_argument('-o', '--output-plot-path',
-            type = str,
-            default = "",
-            help = 'The desired path of the output plot.')
+    parser.add_argument(
+        "path",
+        type=str,
+        help="Path to the CSV file."
+    )
+    parser.add_argument(
+        "-x", "--x",
+        type=str,
+        default="petal_length_cm",
+        help="Column name to plot on the x-axis."
+    )
+    parser.add_argument(
+        "-y", "--y",
+        type=str,
+        default="sepal_length_cm",
+        help="Column name to plot on the y-axis."
+    )
+    parser.add_argument(
+        "-c", "--category",
+        type=str,
+        default="species",
+        help="Column name to use as the categorical grouping variable."
+    )
+    parser.add_argument(
+        "-o", "--output-dir",
+        type=str,
+        default=".",
+        help="Directory where plots will be saved."
+    )
 
-    # Use our arg parser to parse the command-line args
     args = parser.parse_args()
 
-    # Make sure the path to the CSV exists and is a file
     if not os.path.exists(args.path):
-        msg = "ERROR: The path {0} does not exist.".format(args.path)
-        sys.exit(msg)
-    elif not os.path.isfile(args.path):
-        msg = "ERROR: The path {0} is not a file.".format(args.path)
-        sys.exit(msg)
+        sys.exit(f"ERROR: The path {args.path} does not exist.")
 
-    # An example of Python's try-except flow control
+    if not os.path.isfile(args.path):
+        sys.exit(f"ERROR: The path {args.path} is not a file.")
+
+    if not os.path.exists(args.output_dir):
+        os.makedirs(args.output_dir)
+
     try:
         dataframe = pd.read_csv(args.path)
-    except Exception as e:
-        msg = "Pandas had a problem reading {0}\n".format(args.path)
-        sys.stderr.write(msg)
-        raise e
+    except Exception as error:
+        sys.stderr.write(f"ERROR: Could not read {args.path}\n")
+        raise error
 
-    regress_and_scatter(dataframe, args.x, args.y,
-            args.category, args.output_plot_path)
+    for column_name in [args.x, args.y, args.category]:
+        if column_name not in dataframe.columns:
+            sys.exit(f"ERROR: Column '{column_name}' not found in the CSV file.")
+
+    saved_plots = regress_and_plot_by_species(
+        dataframe,
+        args.x,
+        args.y,
+        args.category,
+        args.output_dir
+    )
+
+    for plot_path in saved_plots:
+        print(f"Saved plot: {plot_path}")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main_cli()
