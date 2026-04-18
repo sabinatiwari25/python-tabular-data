@@ -1,8 +1,8 @@
 #! /usr/bin/env python3
 
 """
-A script for regressing and plotting two variables stored in columns of a
-tabular data file.
+Perform linear regression and create scatter plots with regression lines
+for each category in a tabular CSV file.
 """
 
 import os
