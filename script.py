@@ -33,7 +33,7 @@ def compose_plot_file_name(x_label, y_label, category_label = None):
     str
         Output plot file name.
     """
-     safe_species = species_name.replace(" ", "_")
+    safe_species = species_name.replace(" ", "_")
     return f"{safe_species}_{x_label}_vs_{y_label}.png"
 
  def plot_regression(dataframe, x_column_name, y_column_name, species_name, output_dir):
