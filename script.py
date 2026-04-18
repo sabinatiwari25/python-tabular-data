@@ -85,9 +85,7 @@ def compose_plot_file_name(x_label, y_label, category_label = None):
 
     return plot_path
 
-def regress_and_scatter(dataframe, x_column_name, y_column_name,
-        category_column_name = None,
-        plot_path = None):
+    def regress_and_plot_by_species(dataframe, x_column_name, y_column_name, category_column_name, output_dir):
     """
     Generates a scatter plot from the data in the pandas DataFrame,
     `dataframe`.
@@ -107,7 +105,7 @@ def regress_and_scatter(dataframe, x_column_name, y_column_name,
     y_column_name : str 
         The name of the column in `dataframe` to plot along the Y-axis
         and treat as the response variable in the regression.
-
+    
     category_column_name : str 
         The name of the column in `dataframe` to use as a categorical variable.
         If provided, the `dataframe` is broken up by rows using this variable
@@ -121,55 +119,6 @@ def regress_and_scatter(dataframe, x_column_name, y_column_name,
         
 
     Returns
-    -------
-    None
-        The plot is saved and nothing is returned.
-    """
-    # If no plot path is provided, we will save the plot to the current working
-    # directory and use the x and y column names for the file name
-    if not plot_path:
-        plot_path = compose_plot_file_name(x_column_name, y_column_name,
-                category_column_name)
-
-    # Break up the dataframe into groups based on the columm with the
-    # categorical variable
-    if category_column_name:
-        grouped_dataframes = dataframe.groupby(category_column_name)
-    else:
-        # If no category column was provided we will plot all the data at once,
-        # but we need to put the dataframe in a tuple of tuples so that the
-        # `for` loop below will work
-        grouped_dataframes = ('all', dataframe),
-
-    # Get the min and max values of X to use for the regression lines
-    # below
-    x_min = min(dataframe[x_column_name])
-    x_max = max(dataframe[x_column_name])
-
-    # Loop over our grouped dataframes and plot the points and regression line
-    color_index = 0
-    for category, df in grouped_dataframes:
-        x = df[x_column_name]
-        y = df[y_column_name]
-        regression = stats.linregress(x, y)
-        slope = regression.slope
-        intercept = regression.intercept
-        plt.scatter(x, y, label = category, color = 'C' + str(color_index))
-
-        # Get Y values predicted by linear regression for the min and max X
-        # vlaues
-        y1 = slope * x_min + intercept
-        y2 = slope * x_max + intercept
-        # Plot the regression line
-        plt.plot((x_min, x_max), (y1, y2),
-                color = 'C' + str(color_index))
-        color_index += 1
-
-    # Add labels and legend and save the plot
-    plt.xlabel(x_column_name)
-    plt.ylabel(y_column_name)
-    plt.legend()
-    plt.savefig(plot_path)
 
 def main_cli():
     """
