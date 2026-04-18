@@ -12,31 +12,28 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from scipy import stats
 
-    def compose_plot_file_name(x_label, y_label, category_label = None):
+def compose_plot_file_name(species_name, x_label, y_label):
     """
-    Creates a name for a plot file based on the labels for the X, Y, and
-    categorical variables.
+    Create an output file name for a species-specific plot.
 
     Parameters
     ----------
-    x_label : str 
-        The label for the X variable
-
-    y_label : str 
-        The label for the Y variable
-
-    category_label : str 
-        The label for the categorical variable. 
+    species_name : str
+        Name of the species.
+    x_label : str
+        Column name used for the x-axis.
+    y_label : str
+        Column name used for the y-axis.
 
     Returns
     -------
     str
         Output plot file name.
     """
-        safe_species = species_name.replace(" ", "_")
-        return f"{safe_species}_{x_label}_vs_{y_label}.png"
+    safe_species = species_name.replace(" ", "_")
+    return f"{safe_species}_{x_label}_vs_{y_label}.png"
 
-    def plot_regression(dataframe, x_column_name, y_column_name, species_name, output_dir):
+def plot_regression(dataframe, x_column_name, y_column_name, species_name, output_dir):
     """
     Create a scatter plot and regression line for one species.
 
@@ -85,7 +82,7 @@ from scipy import stats
 
     return plot_path
 
-    def regress_and_plot_by_species(dataframe, x_column_name, y_column_name, category_column_name, output_dir):
+def regress_and_plot_by_species(dataframe, x_column_name, y_column_name, category_column_name, output_dir):
     """
     Generates a scatter plot from the data in the pandas DataFrame,
     `dataframe`.
@@ -139,7 +136,7 @@ from scipy import stats
     return saved_plots
 
 
-    def main_cli():
+def main_cli():
     """
     Run the command-line interface for the script.
     """
